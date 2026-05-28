@@ -69,6 +69,7 @@ import pathlib
 import random
 import re
 import tempfile
+import threading
 import time
 from typing import Any, Iterator
 import urllib.error
@@ -126,6 +127,7 @@ DEFAULT_NETWORK_PROFILE_DIR = (
     pathlib.Path(__file__).resolve().parents[2] / "config" / "network_profiles"
 )
 _NETWORK_PROFILE_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
+_LOCK_FALLBACK_WARNING_ONCE = threading.Lock()
 _LOCK_FALLBACK_WARNING_EMITTED = False
 
 def clear_network_profile_cache() -> None:
@@ -331,32 +333,41 @@ def _exclusive_file_lock(f) -> Iterator[None]:
     lock_len = 1024
     f.seek(0)
     deadline = time.monotonic() + 5.0  # 5-second ceiling
+    acquired = False
     while True:
       try:
         msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, lock_len)
+        acquired = True
         break  # lock acquired
       except OSError:
         if time.monotonic() >= deadline:
           # Give up and proceed without lock -- better than hanging
           # forever.  The rate limiter degrades gracefully.
+          logging.warning(
+              "science-skills rate limiter: failed to acquire msvcrt "
+              "file lock within 5 s; proceeding without lock. "
+              "API rate limits may be less reliable for this request."
+          )
           break
         time.sleep(0.01)
     try:
       yield
     finally:
-      f.seek(0)
-      try:
-        msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, lock_len)
-      except OSError:
-        pass  # best-effort unlock
+      if acquired:
+        f.seek(0)
+        try:
+          msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, lock_len)
+        except OSError:
+          pass  # best-effort unlock
   else:
     global _LOCK_FALLBACK_WARNING_EMITTED
-    if not _LOCK_FALLBACK_WARNING_EMITTED:
-      logging.warning(
-          "science-skills rate limiter is running without cross-process "
-          "locking; API rate limits may be less reliable in this Python build."
-      )
-      _LOCK_FALLBACK_WARNING_EMITTED = True
+    with _LOCK_FALLBACK_WARNING_ONCE:
+      if not _LOCK_FALLBACK_WARNING_EMITTED:
+        logging.warning(
+            "science-skills rate limiter is running without cross-process "
+            "locking; API rate limits may be less reliable in this Python build."
+        )
+        _LOCK_FALLBACK_WARNING_EMITTED = True
     yield
 
 
@@ -426,7 +437,13 @@ def _maybe_decompress(
 
 
 def redact_url(url: str | None) -> str | None:
-  """Return *url* with sensitive query parameter values redacted."""
+  """Return *url* with sensitive query parameter values redacted.
+
+  .. note:: Known gaps (TODO for future release):
+     - Does not strip ``user:pass@`` credentials from proxy-style URLs.
+     - Does not redact Bearer tokens in HTTP headers.
+     See issue #13 / #14 in the 0.1.0 code review.
+  """
   if url is None:
     return None
   try:
@@ -470,9 +487,14 @@ class HttpError(Exception):
   """Raised when an HTTP request fails with a non-retryable or exhausted error.
 
   Attributes:
-    status_code: HTTP status code (`None` for network-level failures).
+    status_code: HTTP status code (``None`` for network-level failures).
     body: Raw error response body bytes, if available.
     url: The URL that was requested.
+
+  .. note:: Known gap (TODO for future release):
+     The original ``body`` bytes are stored unredacted on the exception.
+     If a caller passes credentials in a JSON body, they could leak.
+     See issue #13 in the 0.1.0 code review.
   """
 
   MAX_BODY_SUMMARY_LEN = 500
@@ -631,6 +653,23 @@ def _parse_throttle_control(headers) -> float:
   return max_delay
 
 
+def _redact_proxy_url(url: str) -> str:
+  """Strip ``user:pass@`` credentials from a proxy URL for safe logging."""
+  try:
+    parsed = urllib.parse.urlsplit(url)
+    if parsed.username or parsed.password:
+      # Rebuild without credentials.
+      netloc = parsed.hostname or ""
+      if parsed.port:
+        netloc = f"{netloc}:{parsed.port}"
+      return urllib.parse.urlunsplit(
+          parsed._replace(netloc=netloc)
+      )
+  except (ValueError, AttributeError):
+    pass
+  return url
+
+
 class HttpClient:
   """Rate-limited HTTP client with automatic retries and backoff.
 
@@ -638,9 +677,12 @@ class HttpClient:
   charset detection, and streaming iteration internally.
 
   Proxy configuration (``SCIENCE_PROXY``, ``HTTPS_PROXY``, ``HTTP_PROXY``)
-  is read once on the first request and cached for the client's lifetime.
-  Changing environment variables after the first request has no effect —
+  is read once at construction time and cached for the client's lifetime.
+  Changing environment variables after construction has no effect —
   create a new ``HttpClient`` instance instead.
+
+  .. note:: If ``SCIENCE_PROXY`` contains ``user:pass@`` credentials, they
+     are stripped from log output but remain in the underlying opener.
 
   Example:
 
@@ -709,7 +751,24 @@ class HttpClient:
     self._limiter = _RateLimiter(self.hostname, qps=qps)
     self._next_min_sleep = 0.0
     self._referer_skill = referer_skill
-    self._proxy_opener: urllib.request.OpenerDirector | None = None
+    # Build proxy opener eagerly to avoid TOCTOU races under threading.
+    proxy_url = (
+        os.environ.get("SCIENCE_PROXY")
+        or os.environ.get("HTTPS_PROXY")
+        or os.environ.get("HTTP_PROXY")
+    )
+    if proxy_url:
+      logging.debug(
+          "HttpClient[%s]: using proxy %s",
+          self.hostname,
+          _redact_proxy_url(proxy_url),
+      )
+      proxy_handler = urllib.request.ProxyHandler(
+          {"http": proxy_url, "https": proxy_url}
+      )
+      self._proxy_opener = urllib.request.build_opener(proxy_handler)
+    else:
+      self._proxy_opener = urllib.request.build_opener()
 
   def wait(self, min_sleep: float = 0.0) -> None:
     """Wait for the rate limiter without making a request.
@@ -968,17 +1027,6 @@ class HttpClient:
       req = self._build_request(url, method, headers, data, json_body)
 
       try:
-        if self._proxy_opener is None:
-          proxy_url = (
-              os.environ.get("SCIENCE_PROXY")
-              or os.environ.get("HTTPS_PROXY")
-              or os.environ.get("HTTP_PROXY")
-          )
-          if proxy_url:
-            proxy_handler = urllib.request.ProxyHandler({'http': proxy_url, 'https': proxy_url})
-            self._proxy_opener = urllib.request.build_opener(proxy_handler)
-          else:
-            self._proxy_opener = urllib.request.build_opener()
         response = self._proxy_opener.open(req, timeout=effective_timeout)
       except urllib.error.HTTPError as exc:
         status = exc.code
@@ -1183,8 +1231,9 @@ class HttpClient:
     """Try *url* first, then each URL in *alternatives* on failure.
 
     Uses fast-fail semantics (max_retries=1, timeout=10s) for the primary
-    URL and each alternative so fallback happens quickly.  Only the last
-    failure is raised if all URLs fail.
+    URL and each alternative so fallback happens quickly.  If all URLs
+    fail, the last ``HttpError`` is raised with prior failures attached
+    as ``__notes__`` (Python 3.11+) and chained via ``__cause__``.
 
     Callers may override ``max_retries`` and ``timeout`` via *kwargs*;
     the fast-fail defaults only apply when the caller does not specify them.
@@ -1203,19 +1252,29 @@ class HttpClient:
     kwargs.setdefault("max_retries", FAST_FAIL_MAX_RETRIES)
     kwargs.setdefault("timeout", FAST_FAIL_TIMEOUT_SECS)
     urls = [url] + (alternatives or [])
-    last_exc: Exception | None = None
+    all_errors: list[HttpError] = []
     for candidate in urls:
       try:
         return self.fetch(candidate, **kwargs)
       except HttpError as exc:
-        last_exc = exc
+        all_errors.append(exc)
         logging.info(
             "HttpClient[%s]: fallback candidate %s failed (%s), trying next",
             self.hostname,
             redact_url(candidate),
             redact_sensitive_text(str(exc)),
         )
-    raise last_exc  # type: ignore[misc]
+    # Re-raise last error with full chain of prior failures.
+    last_exc = all_errors[-1]
+    if len(all_errors) > 1:
+      # Attach prior failures as notes (Python 3.11+).
+      for i, prior in enumerate(all_errors[:-1]):
+        note = f"Prior failure [{i+1}/{len(all_errors)}]: {prior}"
+        if hasattr(last_exc, "add_note"):
+          last_exc.add_note(note)
+      # Chain via __cause__ so traceback shows the first failure.
+      raise last_exc from all_errors[0]
+    raise last_exc
 
 
 def fetch_batch(
@@ -1225,17 +1284,24 @@ def fetch_batch(
     max_workers: int = 4,
     **kwargs,
 ) -> list[HttpResponse | Exception]:
-    """Fetch multiple URLs concurrently using a thread pool.
+    """Fetch multiple URLs using a thread pool with shared rate limiting.
 
-    Respects the client's rate limiter — each thread calls ``client.fetch()``
-    which goes through the same ``_RateLimiter``.  Results are returned in
-    the same order as *urls*; failures are returned as exceptions (not
-    raised).
+    .. important:: Effective concurrency is 1.
+       Each thread calls ``client.fetch()``, which acquires a cross-process
+       file lock via ``_RateLimiter.wait()`` and sleeps for ``1/qps``
+       seconds.  ``max_workers`` controls how many requests are **queued**
+       in the thread pool, not how many execute in parallel.  This is by
+       design — it prevents callers from accidentally exceeding API rate
+       limits.
+
+    Results are returned in the same order as *urls*; failures are returned
+    as exceptions (not raised).
 
     Args:
       client: The ``HttpClient`` to use.
       urls: List of URLs to fetch.
-      max_workers: Maximum number of concurrent threads.
+      max_workers: Maximum number of queued threads (effective I/O
+        concurrency is always 1 due to the rate limiter).
       **kwargs: Keyword arguments passed to ``client.fetch()``.
 
     Returns:
@@ -1243,7 +1309,7 @@ def fetch_batch(
     """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    results: list[HttpResponse | Exception] = [None] * len(urls)  # type: ignore[list-item]
+    results: list[HttpResponse | Exception | None] = [None] * len(urls)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
       future_to_idx = {
           executor.submit(client.fetch, url, **kwargs): i
@@ -1255,4 +1321,4 @@ def fetch_batch(
           results[idx] = future.result()
         except Exception as exc:
           results[idx] = exc
-    return results
+    return results  # type: ignore[return-value]

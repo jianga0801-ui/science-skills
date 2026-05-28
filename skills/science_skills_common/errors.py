@@ -23,102 +23,102 @@ from __future__ import annotations
 
 
 class SkillError(Exception):
-    """Base class for skill execution errors.
-    
-    Attributes:
-        message: Human-readable error message (Chinese preferred for user-facing)
-        code: Machine-readable error code for programmatic handling
-        source: Data source or skill name that generated the error
-        retryable: Whether the operation can be retried
-        retry_after: Seconds to wait before retry (for RateLimitError)
-    """
-    retryable: bool = False
-    retry_after: float | None = None
+  """Base class for skill execution errors.
 
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "SKILL_ERROR",
-        source: str = "",
-    ) -> None:
-        self.message = message
-        self.code = code
-        self.source = source
-        super().__init__(message)
+  Attributes:
+      message: Human-readable error message (Chinese preferred for user-facing)
+      code: Machine-readable error code for programmatic handling
+      source: Data source or skill name that generated the error
+      retryable: Whether the operation can be retried
+      retry_after: Seconds to wait before retry (for RateLimitError)
+  """
+  retryable: bool = False
+  retry_after: float | None = None
+
+  def __init__(
+      self,
+      message: str,
+      *,
+      code: str = "SKILL_ERROR",
+      source: str = "",
+  ) -> None:
+    self.message = message
+    self.code = code
+    self.source = source
+    super().__init__(message)
 
 
 class NetworkError(SkillError):
-    """Network request failed (timeout, connection refused, DNS failure, etc.)."""
-    retryable = True
+  """Network request failed (timeout, connection refused, DNS failure, etc.)."""
+  retryable = True
 
-    def __init__(
-        self,
-        message: str,
-        *,
-        status_code: int | None = None,
-        source: str = "",
-    ) -> None:
-        super().__init__(message, code="NETWORK_ERROR", source=source)
-        self.status_code = status_code
+  def __init__(
+      self,
+      message: str,
+      *,
+      status_code: int | None = None,
+      source: str = "",
+  ) -> None:
+    super().__init__(message, code="NETWORK_ERROR", source=source)
+    self.status_code = status_code
 
 
 class QueryError(SkillError):
-    """User input or query parameter error.
-    
-    Not retryable - user must fix the input.
-    """
+  """User input or query parameter error.
 
-    def __init__(self, message: str, *, source: str = "") -> None:
-        super().__init__(message, code="QUERY_ERROR", source=source)
+  Not retryable - user must fix the input.
+  """
+
+  def __init__(self, message: str, *, source: str = "") -> None:
+    super().__init__(message, code="QUERY_ERROR", source=source)
 
 
 class RateLimitError(SkillError):
-    """Rate limit exceeded.
-    
-    Retryable after waiting retry_after seconds.
-    """
-    retryable = True
+  """Rate limit exceeded.
 
-    def __init__(
-        self,
-        message: str,
-        *,
-        retry_after: float | None = None,
-        source: str = "",
-    ) -> None:
-        super().__init__(message, code="RATE_LIMIT", source=source)
-        self.retry_after = retry_after
+  Retryable after waiting retry_after seconds.
+  """
+  retryable = True
+
+  def __init__(
+      self,
+      message: str,
+      *,
+      retry_after: float | None = None,
+      source: str = "",
+  ) -> None:
+    super().__init__(message, code="RATE_LIMIT", source=source)
+    self.retry_after = retry_after
 
 
 class DataSourceError(SkillError):
-    """Data source returned an error (malformed response, server error, etc.).
-    
-    Not retryable with same query - may need to try alternative source.
-    """
+  """Data source returned an error (malformed response, server error, etc.).
 
-    def __init__(self, message: str, *, source: str = "") -> None:
-        super().__init__(message, code="DATA_SOURCE_ERROR", source=source)
+  Not retryable with same query - may need to try alternative source.
+  """
+
+  def __init__(self, message: str, *, source: str = "") -> None:
+    super().__init__(message, code="DATA_SOURCE_ERROR", source=source)
 
 
 def skill_error_to_dict(exc: SkillError) -> dict[str, str | bool | float | None]:
-    """Convert a SkillError to an Agent-parseable dict.
-    
-    Example output:
-        {
-            "status": "error",
-            "error_code": "NETWORK_ERROR",
-            "message": "PubMed 查询超时",
-            "source": "pubmed",
-            "retryable": true,
-            "retry_after": null,
-        }
-    """
-    return {
-        "status": "error",
-        "error_code": exc.code,
-        "message": exc.message,
-        "source": exc.source,
-        "retryable": exc.retryable,
-        "retry_after": exc.retry_after,
-    }
+  """Convert a SkillError to an Agent-parseable dict.
+
+  Example output:
+      {
+          "status": "error",
+          "error_code": "NETWORK_ERROR",
+          "message": "PubMed 查询超时",
+          "source": "pubmed",
+          "retryable": true,
+          "retry_after": null,
+      }
+  """
+  return {
+      "status": "error",
+      "error_code": exc.code,
+      "message": exc.message,
+      "source": exc.source,
+      "retryable": exc.retryable,
+      "retry_after": exc.retry_after,
+  }

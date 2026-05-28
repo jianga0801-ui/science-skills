@@ -28,6 +28,7 @@ import argparse
 import json
 import os
 import sys
+import urllib.parse
 
 import pathlib
 
@@ -104,7 +105,16 @@ def download_files(args: argparse.Namespace):
     print(f"Downloading {sanitized_id} from {url}...", file=sys.stderr)
 
     try:
-      content = CLIENT.fetch_bytes(url)
+      resolved_url = CLIENT._resolve_url(url)
+      official_url = urllib.parse.urljoin(CLIENT.base_url, url)
+      if resolved_url != official_url:
+        # Mirror is active; fall back to official if mirror fails.
+        content_response = CLIENT.fetch_with_fallback(
+            resolved_url, alternatives=[official_url]
+        )
+        content = content_response.data
+      else:
+        content = CLIENT.fetch_bytes(url)
       with open(output_path, "wb") as f:
         f.write(content)
       print(f"Saved to {output_path}", file=sys.stderr)

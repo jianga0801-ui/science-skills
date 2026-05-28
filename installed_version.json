@@ -1,6 +1,6 @@
 {
   "package_id": "science-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "current_edition": "free",
   "package_manifest": "config/package_manifest.json",
   "license": "Apache-2.0",

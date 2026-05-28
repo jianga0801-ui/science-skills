@@ -94,6 +94,7 @@ PMC_BIOC_BASE = (
 )
 
 _EUTILS_CLIENT = None
+_EUTILS_BASE = None
 _PMC_CLIENT = None
 _EPMC_CLIENT = None
 
@@ -105,12 +106,19 @@ def _get_eutils_base() -> str:
 
 def get_eutils_client():
   """Returns the lazily initialized E-utilities HttpClient."""
-  global _EUTILS_CLIENT
+  global _EUTILS_CLIENT, _EUTILS_BASE
   if _EUTILS_CLIENT is None:
+    _EUTILS_BASE = _get_eutils_base()
     qps = 10 if os.environ.get("NCBI_API_KEY") else 3
     fast_fail = _should_fallback()
-    _EUTILS_CLIENT = http_client.HttpClient(_get_eutils_base(), qps=qps, fast_fail=fast_fail)
+    _EUTILS_CLIENT = http_client.HttpClient(_EUTILS_BASE, qps=qps, fast_fail=fast_fail)
   return _EUTILS_CLIENT
+
+
+def _get_frozen_eutils_base() -> str:
+  """Return the frozen EUtils base URL, initializing the client if needed."""
+  get_eutils_client()  # ensures _EUTILS_BASE is set
+  return _EUTILS_BASE
 
 
 def get_pmc_client():
@@ -285,7 +293,7 @@ def search_pubmed(
       "retmode": "json",
   }
   try:
-    data = _get(f"{_get_eutils_base()}/entrez/eutils/esearch.fcgi", params)
+    data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/esearch.fcgi", params)
   except (NetworkError, DataSourceError) as e:
     if _should_fallback():
       print("[提示] 官方 NCBI 访问失败，正在自动切换至 EuropePMC 备用终点为您拉取文献...", file=sys.stderr)
@@ -366,7 +374,7 @@ def fetch_article_abstracts(
       | {"db": "pubmed", "rettype": "abstract", "retmode": "xml"}
   )
   try:
-    xml_data = _get(f"{_get_eutils_base()}/entrez/eutils/efetch.fcgi", params, raw=True)
+    xml_data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/efetch.fcgi", params, raw=True)
   except (NetworkError, DataSourceError) as e:
     if _should_fallback():
       print("[提示] 官方 NCBI 访问失败，正在自动切换至 EuropePMC 备用终点为您拉取文献...", file=sys.stderr)
@@ -553,7 +561,7 @@ def find_linked_biological_data(
   if maxdate:
     params["maxdate"] = maxdate
     params["datetype"] = "pdat"
-  data = _get(f"{_get_eutils_base()}/entrez/eutils/elink.fcgi", params)
+  data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/elink.fcgi", params)
   if isinstance(data, dict):
     if "ERROR" in data:
       raise DataSourceError(str(data["ERROR"]), source="pubmed")
@@ -603,7 +611,7 @@ def discover_available_links(
       "cmd": "acheck",
       "retmode": "json",
   }
-  data = _get(f"{_get_eutils_base()}/entrez/eutils/elink.fcgi", params)
+  data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/elink.fcgi", params)
   if isinstance(data, dict):
     if "ERROR" in data:
       raise DataSourceError(str(data["ERROR"]), source="pubmed")
@@ -682,7 +690,7 @@ def verify_medical_spelling(term: str) -> dict[str, str]:
     DataSourceError: XML parse error.
   """
   params = _env_params() | {"db": "pubmed", "term": term}
-  data = _get(f"{_get_eutils_base()}/entrez/eutils/espell.fcgi", params, raw=True)
+  data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/espell.fcgi", params, raw=True)
   try:
     root = ET.fromstring(data)
     corrected = root.findtext(".//CorrectedQuery") or ""
@@ -709,7 +717,7 @@ def global_database_discovery(query: str) -> dict[str, int]:
     DataSourceError: XML parse error.
   """
   params = _env_params() | {"term": query, "retmode": "xml"}
-  data = _get(f"{_get_eutils_base()}/gquery", params, raw=True)
+  data = _get(f"{_get_frozen_eutils_base()}/gquery", params, raw=True)
   try:
     root = ET.fromstring(data)
     result = {}
@@ -749,7 +757,7 @@ def match_raw_citations(citation_strings: list[str]) -> list[str]:
       "retmode": "xml",
       "bdata": "\r".join(citation_strings),
   }
-  data = _get(f"{_get_eutils_base()}/entrez/eutils/ecitmatch.cgi", params, raw=True)
+  data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/ecitmatch.cgi", params, raw=True)
   pmids = []
   for line in data.strip().split("\n"):
     parts = line.strip().rstrip("|").split("|")
@@ -778,7 +786,7 @@ def cache_results_history(pmids: list[str]) -> dict[str, str]:
     DataSourceError: XML parse error.
   """
   params = _env_params() | {"db": "pubmed", "id": ",".join(pmids)}
-  data = _post(f"{_get_eutils_base()}/entrez/eutils/epost.fcgi", params)
+  data = _post(f"{_get_frozen_eutils_base()}/entrez/eutils/epost.fcgi", params)
   try:
     root = ET.fromstring(data)
     webenv = root.findtext(".//WebEnv") or ""
@@ -814,7 +822,7 @@ def fetch_database_summary(
       "id": ",".join(id_list),
       "retmode": "json",
   }
-  data = _get(f"{_get_eutils_base()}/entrez/eutils/esummary.fcgi", params)
+  data = _get(f"{_get_frozen_eutils_base()}/entrez/eutils/esummary.fcgi", params)
   try:
     result_block = data.get("result", {})
     uids = result_block.get("uids", [])

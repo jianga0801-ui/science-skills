@@ -1,6 +1,6 @@
 {
   "name": "science-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Open-source agent skills bundle for scientific database workflows, with China-network awareness, Chinese query normalization helpers, and local diagnostics.",
   "author": {
     "name": "Jinxiao Wang"

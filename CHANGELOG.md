@@ -4,6 +4,24 @@ All notable changes to this open-source Free edition of Science Skills are
 documented here. This changelog covers the open-source release line only;
 the commercial Pro / Enterprise editions track their own versions.
 
+## 0.1.1 - 2026-05-28
+
+This patch release addresses key issues related to thread concurrency, fallback resilience, query normalization, and credential security discovered during code review.
+
+### Added
+
+- A comprehensive suite of core HTTP client tests in `tests/test_http_client.py` covering redaction, fallback exception chaining, and batch fetching.
+- Added license headers to all normalizer scripts.
+
+### Fixed
+
+- **Concurrency & Thread Safety**: Initialized `_proxy_opener` eagerly in `__init__` rather than lazily to avoid race conditions under multi-threading.
+- **Lock Warning Safety**: Synced read/write of proxy-limiter fallback warning using a module-level thread lock to prevent duplicate console warnings.
+- **Fallback Exception Chaining**: Enhanced `fetch_with_fallback` to chain prior failures using `__cause__` and attach details under `__notes__` on Python 3.11+.
+- **Query Normalization Priority**: Sorted PubMed translation rules descending by prefix length to avoid premature short-word matching (matching PDB normalizer behavior).
+- **China Mirror Resilience**: Configured PDB coordinate downloader to gracefully fall back to official RCSB servers if the Chinese mirror (PDBJ) is unreachable.
+- **Credential Protection**: Added proxy credential scrubbing (`_redact_proxy_url`) and documented gaps for header/body redaction.
+
 ## 0.1.0 - 2026-05-28
 
 Initial open-source release. Derived from the internal Science Skills

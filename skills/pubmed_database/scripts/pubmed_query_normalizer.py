@@ -1,3 +1,17 @@
+# Copyright 2026 Jinxiao Wang
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Rule-based Chinese-to-PubMed query normalization.
 
 This module is intentionally conservative: it covers common Chinese biomedical
@@ -66,6 +80,7 @@ _TERM_RULES: tuple[tuple[str, str, str], ...] = (
         "immunotherapy",
     ),
 )
+_TERM_RULES = tuple(sorted(_TERM_RULES, key=lambda x: len(x[0]), reverse=True))
 
 _PUBLICATION_TYPE_RULES: tuple[tuple[str, str, str], ...] = (
     ("系统综述", '"systematic review"[Publication Type]', "systematic_review"),
@@ -74,6 +89,7 @@ _PUBLICATION_TYPE_RULES: tuple[tuple[str, str, str], ...] = (
     ("临床试验", '"clinical trial"[Publication Type]', "clinical_trial"),
     ("综述", '"review"[Publication Type]', "review"),
 )
+_PUBLICATION_TYPE_RULES = tuple(sorted(_PUBLICATION_TYPE_RULES, key=lambda x: len(x[0]), reverse=True))
 
 _KEYWORD_FALLBACKS: tuple[tuple[str, str], ...] = (
     ("新", "new"),
