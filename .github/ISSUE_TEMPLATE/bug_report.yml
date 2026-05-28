@@ -1,0 +1,59 @@
+name: Bug report
+description: Report a problem with Science Skills (open-source Free edition)
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report.
+
+        Before submitting, please confirm the bug is in this open-source Free
+        edition. Pro / Enterprise issues are handled outside this repository.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal commands or code to trigger the bug.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Science Doctor output
+      description: |
+        Output of `python tools/science_doctor.py --no-network`. This is
+        safe to share — it does not contain secrets or proxy values.
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      description: Output of `cat installed_version.json` or the commit hash.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other (please specify in Description)
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.12.3"
+    validations:
+      required: true

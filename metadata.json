@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "product_id": "science-skills",
+  "package_id": "science-skills",
+  "current_edition": "free",
+  "package_manifest": "config/package_manifest.json",
+  "license": "Apache-2.0",
+  "compliance": {
+    "preserve_upstream_license": true,
+    "upstream": {
+      "name": "Google DeepMind science-skills",
+      "repository": "https://github.com/google-deepmind/science-skills",
+      "license": "Apache-2.0"
+    }
+  }
+}

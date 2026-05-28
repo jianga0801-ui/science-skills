@@ -1,0 +1,45 @@
+Science Skills (Free / Open Source Edition)
+Copyright 2026 Jinxiao Wang
+
+This product is licensed under the Apache License, Version 2.0
+(see LICENSE).
+
+------------------------------------------------------------------------
+Upstream attribution
+------------------------------------------------------------------------
+
+This product includes software and documentation derived from
+"science-skills" by Google DeepMind:
+
+    https://github.com/google-deepmind/science-skills
+
+The upstream code components are licensed under the Apache License,
+Version 2.0:
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+The upstream prompt / instruction text components are licensed under the
+Creative Commons Attribution 4.0 International License (CC-BY-4.0):
+
+    https://creativecommons.org/licenses/by/4.0/
+
+Modifications by Jinxiao Wang relative to the upstream project include
+(non-exhaustive): rewritten skill scripts, additional network-profile
+selection layer, Science Doctor diagnostic tool, Chinese query
+normalization helpers, and packaging metadata.
+
+This is not an official Google product. Google LLC is not responsible
+for this distribution, its quality, its support, or its downstream use.
+
+------------------------------------------------------------------------
+Third-party scientific databases
+------------------------------------------------------------------------
+
+This product provides automation utilities for third-party scientific
+databases. It does not own or sublicense third-party database content.
+Users are responsible for following the terms, rate limits, account
+policies, citation requirements, and commercial-use restrictions of
+each data source they query.
+
+See docs/inventory/data-source-license-matrix.md for the per-source
+summary.

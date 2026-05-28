@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "package_id": "science-skills",
+  "commercial_derivative": false,
+  "skill": {
+    "directory": "pubmed_database",
+    "name": "pubmed-database",
+    "description": "Search PubMed for scientific literature, including published clinical trials. Fetch abstracts and full text. Link published research to biological databases (gene, protein, nucleotide, PubChem) to discover associations between papers and specific compounds or genes. Verify medical spelling, match raw citations, and cache result sets for bulk processing. Interfaces NCBI E-utilities and PMC BioC APIs.",
+    "path": "skills/pubmed_database"
+  },
+  "distribution": {
+    "default_tier": "free",
+    "free_eligible": true,
+    "enterprise_configurable": true
+  },
+  "implementation": {
+    "scripts": [
+      "skills/pubmed_database/scripts/pubmed_api.py",
+      "skills/pubmed_database/scripts/pubmed_query_normalizer.py"
+    ],
+    "has_chinese_normalizer": true
+  },
+  "network": {
+    "requires_network": true,
+    "sources": [
+      {
+        "id": "pubmed",
+        "official_api": "https://eutils.ncbi.nlm.nih.gov",
+        "license_note": "遵守 NCBI E-utilities 使用政策、速率限制和引用要求。"
+      },
+      {
+        "id": "europepmc",
+        "official_api": "https://www.ebi.ac.uk/europepmc/webservices/rest/",
+        "license_note": "遵守 Europe PMC 使用条款；全文许可因论文而异。"
+      }
+    ]
+  },
+  "compliance": {
+    "preserve_upstream_license": true,
+    "upstream": {
+      "name": "Google DeepMind science-skills",
+      "repository": "https://github.com/google-deepmind/science-skills",
+      "license": "Apache-2.0"
+    }
+  }
+}

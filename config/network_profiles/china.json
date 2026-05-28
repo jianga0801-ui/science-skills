@@ -1,0 +1,292 @@
+{
+  "profile": "china",
+  "description": "国内网络优化。API 查询仍优先官方源，大文件下载仅使用明确声明的镜像。",
+  "proxy_env": "SCIENCE_PROXY",
+  "sources": {
+    "alphafold": {
+      "official_api": "https://alphafold.ebi.ac.uk",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 EMBL-EBI AlphaFold 数据使用与引用要求。",
+      "official_download": "https://alphafold.ebi.ac.uk/files/"
+    },
+    "alphagenome": {
+      "official_api": "https://deepmind.google.com/science/alphagenome/",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 AlphaGenome 服务、Google Cloud Storage 文件和模型使用条款。",
+      "official_download": "https://storage.googleapis.com/alphagenome/reference/gencode/"
+    },
+    "arxiv": {
+      "official_api": "http://export.arxiv.org/api/query",
+      "mirrors": [],
+      "alternatives": [
+        "https://export.arxiv.org/e-print/"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 arXiv API 使用政策和论文原始许可证。",
+      "official_download": "https://arxiv.org/pdf/"
+    },
+    "biorxiv": {
+      "official_api": "https://api.biorxiv.org",
+      "mirrors": [],
+      "alternatives": [
+        "https://www.biorxiv.org"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 bioRxiv/medRxiv API 与预印本版权条款。"
+    },
+    "chembl": {
+      "official_api": "https://www.ebi.ac.uk/chembl/api/data",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 ChEMBL/EMBL-EBI 使用条款，注意第三方化合物数据来源。"
+    },
+    "clinicaltrials": {
+      "official_api": "https://clinicaltrials.gov/api/v2",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 ClinicalTrials.gov 使用政策，结果解释需保留 NCT ID。"
+    },
+    "clinvar": {
+      "official_api": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/",
+      "mirrors": [],
+      "alternatives": [
+        "https://www.ncbi.nlm.nih.gov/clinvar/"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 NCBI/ClinVar 使用政策，保留 Variation ID、RCV/VCV/HGVS 标识。"
+    },
+    "dbsnp": {
+      "official_api": "https://api.ncbi.nlm.nih.gov/variation/v0/",
+      "mirrors": [],
+      "alternatives": [
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 NCBI/dbSNP 使用政策，保留 rsID 与基因组版本。"
+    },
+    "ebi_ols": {
+      "official_api": "https://www.ebi.ac.uk/ols4/api",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 EMBL-EBI OLS 与具体本体许可证，保留 ontology term IRI。"
+    },
+    "encode": {
+      "official_api": "https://www.encodeproject.org",
+      "mirrors": [],
+      "alternatives": [
+        "https://screen-v2.wenglab.org",
+        "https://factorbook.api.wenglab.org/graphql"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 ENCODE/SCREEN/Factorbook 数据使用和引用要求。"
+    },
+    "ensembl": {
+      "official_api": "https://rest.ensembl.org",
+      "mirrors": [],
+      "alternatives": [
+        "https://grch37.rest.ensembl.org"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Ensembl REST 使用政策，保留 ENSG/ENST/ENSP 和 assembly 信息。"
+    },
+    "europepmc": {
+      "official_api": "https://www.ebi.ac.uk/europepmc/webservices/rest/",
+      "mirrors": [],
+      "alternatives": [
+        "https://europepmc.org"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Europe PMC 使用条款；全文许可因论文而异。"
+    },
+    "foldseek": {
+      "official_api": "https://search.foldseek.com",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Foldseek 服务使用政策；避免高频批量提交。"
+    },
+    "gnomad": {
+      "official_api": "https://gnomad.broadinstitute.org/api",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 gnomAD 数据使用政策，保留数据集版本和群体频率上下文。"
+    },
+    "gtex": {
+      "official_api": "https://gtexportal.org/api/v2",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 GTEx Portal 使用和引用要求，保留组织与版本信息。"
+    },
+    "hpa": {
+      "official_api": "https://www.proteinatlas.org/api",
+      "mirrors": [],
+      "alternatives": [
+        "https://v25.proteinatlas.org"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Human Protein Atlas 许可和署名要求。",
+      "official_download": "https://www.proteinatlas.org/search/download/"
+    },
+    "interpro": {
+      "official_api": "https://www.ebi.ac.uk/interpro/api",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 InterPro/EMBL-EBI 使用条款，保留 accession 和 member database 信息。"
+    },
+    "jaspar": {
+      "official_api": "https://jaspar.elixir.no/api/v1",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 JASPAR 使用和引用要求，保留 matrix ID 与版本。"
+    },
+    "ncbi_sequence": {
+      "official_api": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 NCBI 序列数据库使用政策，保留 accession、版本和数据库名称。"
+    },
+    "openalex": {
+      "official_api": "https://api.openalex.org",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 OpenAlex CC0 许可、Polite Pool mailto 要求和 API Key 使用条款。",
+      "official_download": "https://content.openalex.org"
+    },
+    "openfda": {
+      "official_api": "https://api.fda.gov",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 openFDA 使用政策，注意 FDA 数据免责声明。"
+    },
+    "opentargets": {
+      "official_api": "https://api.platform.opentargets.org/api/v4/graphql",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Open Targets Platform 数据许可和引用要求。"
+    },
+    "pdb": {
+      "official_api": "https://data.rcsb.org",
+      "mirrors": [
+        {
+          "source_prefix": "https://files.rcsb.org/download/",
+          "mirror_prefix": "https://data.pdbj.org/pub/pdb/data/structures/divided/",
+          "usage": "download_only",
+          "transformer": "pdbj_divided_structure"
+        },
+        {
+          "source_prefix": "https://files-beta.rcsb.org/pub/wwpdb/pdb/data/entries/",
+          "mirror_prefix": "https://data.pdbj.org/pub/pdb/data/structures/divided/",
+          "usage": "download_only",
+          "transformer": "pdbj_divided_structure"
+        }
+      ],
+      "alternatives": [
+        "https://www.ebi.ac.uk/pdbe/"
+      ],
+      "strategy": "mirror_for_download_only",
+      "license_note": "遵守 RCSB PDB / wwPDB 数据使用和署名要求。",
+      "official_download": "https://files.rcsb.org/download/"
+    },
+    "protein_msa": {
+      "official_api": "https://www.ebi.ac.uk/Tools/services/rest/clustalo/",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 EMBL-EBI Job Dispatcher 使用条款，避免高频提交。"
+    },
+    "protein_similarity": {
+      "official_api": "https://www.ebi.ac.uk/Tools/services/rest/ncbiblast",
+      "mirrors": [],
+      "alternatives": [
+        "https://api.colabfold.com"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 EMBL-EBI BLAST 与 ColabFold/MMseqs2 服务使用政策。"
+    },
+    "pubchem": {
+      "official_api": "https://pubchem.ncbi.nlm.nih.gov",
+      "mirrors": [],
+      "alternatives": [
+        "https://www.ebi.ac.uk/chembl/"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 PubChem PUG-REST 使用政策和 NCBI 访问限制。"
+    },
+    "pubmed": {
+      "official_api": "https://eutils.ncbi.nlm.nih.gov",
+      "mirrors": [],
+      "alternatives": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/"
+      ],
+      "strategy": "fallback_to_europepmc_on_failure",
+      "license_note": "遵守 NCBI E-utilities 使用政策、速率限制和引用要求。"
+    },
+    "quickgo": {
+      "official_api": "https://www.ebi.ac.uk/QuickGO/services",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 QuickGO/ECO 使用条款，保留 GO/ECO accession。"
+    },
+    "reactome": {
+      "official_api": "https://reactome.org/ContentService",
+      "mirrors": [],
+      "alternatives": [
+        "https://reactome.org/AnalysisService"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 Reactome 许可和引用要求，保留 pathway stable ID。"
+    },
+    "string": {
+      "official_api": "https://string-db.org/api",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 STRING 许可、引用和调用频率要求。"
+    },
+    "ucsc": {
+      "official_api": "https://api.genome.ucsc.edu",
+      "mirrors": [],
+      "alternatives": [
+        "https://genome.ucsc.edu/cgi-bin"
+      ],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 UCSC Genome Browser 使用条件，保留 genome/db 和 track 信息。"
+    },
+    "unibind": {
+      "official_api": "https://unibind.uio.no/api",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 UniBind 使用与引用要求，保留 TF、dataset 与坐标版本。"
+    },
+    "uniprot": {
+      "official_api": "https://rest.uniprot.org",
+      "mirrors": [],
+      "alternatives": [],
+      "strategy": "official_api_with_proxy_hint",
+      "license_note": "遵守 UniProt 使用条款并保留 accession 等标识。"
+    }
+  },
+  "pypi": {
+    "index_url": "https://pypi.tuna.tsinghua.edu.cn/simple",
+    "extra_index_urls": [
+      "https://mirrors.aliyun.com/pypi/simple/"
+    ]
+  }
+}

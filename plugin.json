@@ -1,0 +1,19 @@
+{
+  "name": "science-skills",
+  "version": "0.1.0",
+  "description": "Open-source agent skills bundle for scientific database workflows, with China-network awareness, Chinese query normalization helpers, and local diagnostics.",
+  "author": {
+    "name": "Jinxiao Wang"
+  },
+  "repository": "https://github.com/jianga0801-ui/science-skills",
+  "license": "Apache-2.0",
+  "package_id": "science-skills",
+  "current_edition": "free",
+  "package_manifest": "config/package_manifest.json",
+  "upstream": {
+    "name": "Google DeepMind science-skills",
+    "author": "Google",
+    "repository": "https://github.com/google-deepmind/science-skills",
+    "license": "Apache-2.0"
+  }
+}

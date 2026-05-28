@@ -1,0 +1,8 @@
+{
+  "adapter_id": "claude-code",
+  "display_name": "Claude Code",
+  "minimum_edition": "free",
+  "entrypoint": "README.md",
+  "copies_business_logic": false,
+  "notes": "Expose skills from the existing skills/ directories and keep commercial edition checks in the package manifest."
+}

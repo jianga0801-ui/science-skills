@@ -1,0 +1,8 @@
+{
+  "adapter_id": "cursor",
+  "display_name": "Cursor",
+  "minimum_edition": "free",
+  "entrypoint": "README.md",
+  "copies_business_logic": false,
+  "notes": "Point Cursor rules or project context at the existing skills/ tree and product manifest."
+}

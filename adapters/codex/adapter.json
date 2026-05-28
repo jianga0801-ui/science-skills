@@ -1,0 +1,8 @@
+{
+  "adapter_id": "codex",
+  "display_name": "Codex",
+  "minimum_edition": "free",
+  "entrypoint": "README.md",
+  "copies_business_logic": false,
+  "notes": "Use the repository SKILL.md files, scripts, and package manifest directly. Do not duplicate skill logic in the adapter."
+}

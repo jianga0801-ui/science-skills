@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "package_id": "science-skills",
+  "commercial_derivative": false,
+  "skill": {
+    "directory": "science_skills_common",
+    "name": "science-skills-common",
+    "description": "Shared Python package for Science Skills, currently containing http_client -- a unified HTTP client with rate limiting, retries, and exponential backoff. Not a standalone agent skill. Do not invoke directly.",
+    "path": "skills/science_skills_common"
+  },
+  "distribution": {
+    "default_tier": "free",
+    "free_eligible": true,
+    "enterprise_configurable": true
+  },
+  "implementation": {
+    "scripts": [
+      "skills/science_skills_common/__init__.py",
+      "skills/science_skills_common/http_client.py"
+    ],
+    "has_chinese_normalizer": false
+  },
+  "network": {
+    "requires_network": false,
+    "sources": []
+  },
+  "compliance": {
+    "preserve_upstream_license": true,
+    "upstream": {
+      "name": "Google DeepMind science-skills",
+      "repository": "https://github.com/google-deepmind/science-skills",
+      "license": "Apache-2.0"
+    }
+  }
+}

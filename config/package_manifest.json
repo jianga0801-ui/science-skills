@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "product_id": "science-skills",
+  "product_name": "Science Skills",
+  "package_id": "science-skills",
+  "current_edition": "free",
+  "license": "Apache-2.0",
+  "license_notice": "Apache-2.0 with upstream Apache-2.0 and CC-BY-4.0 attribution; see NOTICE.",
+  "editions": {
+    "free": {
+      "package_id": "science-skills",
+      "positioning": "Open-source agent skills for scientific database workflows with China-network awareness.",
+      "included_skills": [
+        "pdb_database",
+        "pubmed_database",
+        "science_skills_common"
+      ],
+      "network_profiles": [
+        "default",
+        "china"
+      ],
+      "adapters": [
+        "codex",
+        "claude-code",
+        "cursor"
+      ],
+      "science_doctor": true,
+      "support": "community_best_effort"
+    }
+  },
+  "commercial_editions_info": "See docs/editions-comparison.md for a feature comparison with the commercial Pro and Enterprise editions.",
+  "compliance": {
+    "preserve_upstream_license": true,
+    "upstream": {
+      "name": "Google DeepMind science-skills",
+      "repository": "https://github.com/google-deepmind/science-skills",
+      "license": "Apache-2.0"
+    },
+    "database_terms_required": true
+  }
+}

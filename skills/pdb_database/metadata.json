@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "package_id": "science-skills",
+  "commercial_derivative": false,
+  "skill": {
+    "directory": "pdb_database",
+    "name": "pdb-database",
+    "description": "Use when you want to search for or download experimentally-determined 3D structures for biomolecules (proteins, nucleic acids, bound ligands). Supports searching by sequence similarity, structure similarity, chemical and other attributes. Also use to get metadata about biomolecular structure experiments.",
+    "path": "skills/pdb_database"
+  },
+  "distribution": {
+    "default_tier": "free",
+    "free_eligible": true,
+    "enterprise_configurable": true
+  },
+  "implementation": {
+    "scripts": [
+      "skills/pdb_database/scripts/download_coordinate_files.py",
+      "skills/pdb_database/scripts/fetch_pdb_metadata.py",
+      "skills/pdb_database/scripts/fetch_schema.py",
+      "skills/pdb_database/scripts/pdb_query_normalizer.py",
+      "skills/pdb_database/scripts/search_pdb.py"
+    ],
+    "has_chinese_normalizer": true
+  },
+  "network": {
+    "requires_network": true,
+    "sources": [
+      {
+        "id": "pdb",
+        "official_api": "https://data.rcsb.org",
+        "license_note": "遵守 RCSB PDB / wwPDB 数据使用和署名要求。"
+      }
+    ]
+  },
+  "compliance": {
+    "preserve_upstream_license": true,
+    "upstream": {
+      "name": "Google DeepMind science-skills",
+      "repository": "https://github.com/google-deepmind/science-skills",
+      "license": "Apache-2.0"
+    }
+  }
+}
