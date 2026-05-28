@@ -39,7 +39,7 @@ This Free edition is the open-source baseline. Commercial **Pro** and **Enterpri
 | Component | Items |
 |---|---|
 | Skills | `pubmed_database`, `pdb_database`, `science_skills_common` (shared HTTP client) |
-| Network profiles | `default` (official sources first), `china` (China-optimized mirrors for selected downloads) |
+| Network profiles | `china` (**built-in default**, China-optimized mirrors for selected downloads), `default` (official sources first; opt-in via env var) |
 | Adapters | Codex, Claude Code, Cursor |
 | Tools | `science_doctor.py` (local diagnostic), `release_check.py` (repo sanity check) |
 | Chinese query normalizers | PubMed, PDB |
@@ -93,10 +93,8 @@ Science Skills separates API access from file-download mirrors. Profiles select 
 
 | Profile | What it does |
 |---|---|
-| `default` | Official sources first. Suitable for global environments. |
-| `china` | China-optimized: official sources for API queries, configured mirrors for selected large downloads (e.g. PDB coordinate files via PDBJ). Also tightens proxy diagnostics. |
-
-`china` is the built-in default so users on the Chinese mainland don't need to configure anything.
+| `china` (**built-in default**) | China-optimized: official sources for API queries, configured mirrors for selected large downloads (e.g. PDB coordinate files via PDBJ). Also tightens proxy diagnostics. Users on the Chinese mainland don't need to configure anything. |
+| `default` | Official sources first. Suitable for global environments. Opt in by setting `SCIENCE_NETWORK_PROFILE=default`. |
 
 To override, set an environment variable. PowerShell:
 
