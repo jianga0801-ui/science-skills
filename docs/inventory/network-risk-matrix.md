@@ -26,15 +26,14 @@
 
 ## 2. 三大推荐网络配置 Profile 详述
 
-为了消除上述网络可用性风险，本产品支持通过环境变量 `SCIENCE_NETWORK_PROFILE` 激活针对性的优化配置文件。配置文件采用 **base + overlay** 架构（详见 `config/network_profiles/README.md`）：
+为了消除上述网络可用性风险，本项目支持通过环境变量 `SCIENCE_NETWORK_PROFILE` 激活针对性的优化配置文件。开源免费版交付的是**预合并后**的完整 profile 文件：
 
-- `base.json`：定义所有数据源的官方地址、镜像、备选源和许可证备注，同时也是 `default` profile。
-- `china.overlay.json`：仅包含国内优化差异（PDBJ 镜像、Europe PMC fallback、清华 PyPI 镜像），构建时合并到 base 上生成完整的 `china.json`。
-- `enterprise.overlay.json`：企业内网模板，通配覆盖所有源为自定义策略，实际私有地址在交付时通过 `SCIENCE_NETWORK_PROFILE_DIR` 注入。
+- `base.json`：仅使用各数据源的官方地址，无镜像覆盖。
+- `china.json`：在 base 之上叠加国内优化（PDBJ 镜像、Europe PMC fallback、清华 PyPI 镜像）。
 
-默认 profile 为 `china`，普通用户无需手动设置 `SCIENCE_NETWORK_PROFILE`。
+默认 profile 为 `china`，普通用户无需手动设置 `SCIENCE_NETWORK_PROFILE`。`enterprise` profile 仅在商业企业版中提供，本仓库不含。
 
-### 2.1 `default` (官方源优先 Profile)
+### 2.1 `base` (官方源 Profile)
 - **适用场景**：海外科研机构、香港/澳门等能直接连通全球学术网 of 科研用户。
 - **机制**：
   - 优先调用各个数据库 of 官方主服务器（如 `rcsb.org`, `ebi.ac.uk` 等）。
@@ -47,11 +46,9 @@
   - **优雅重试与指数退避**：对于 `ncbi.nlm.nih.gov` 等易受出口路由波动干扰 of 域名，HTTP 客户端自动开启 QPS 平滑退避（Backoff），最大重试次数根据系统底层代码默认配置设定为 **7 次**（提供极高 of 出口闪断容忍度），确保请求不易因瞬间抖动而报错崩溃。
   - **自动注入身份**：通过 `OPENALEX_MAILTO` 自动为 OpenAlex 注入用于 Polite 通道的 `mailto` 信息，提升访问优先级。
 
-### 2.3 `enterprise` (企业私有化隔离 Profile)
-- **适用场景**：高安全等级 of 制药企业内网、完全断网 of 私有化部署环境。
-- **机制**：
-  - 将所有外部 API 重定向至企业内网架设 of 本地私有镜像（如私有 Ensembl 数据库、私有 UniProt TSV 缓存等）。
-  - 彻底阻断任何主动 of 外部 Internet 请求，完全规避网络资产泄漏与敏感数据上传风险。
+### 2.3 `enterprise` Profile（仅商业企业版）
+
+`enterprise` profile（企业私有化隔离）仅在商业企业版中提供，**本开源仓库不含**。其设计目标是在高安全等级的制药企业内网或完全断网的私有化部署环境中，将所有外部 API 重定向至企业内网架设的本地私有镜像。详见 [editions-comparison.md](../editions-comparison.md)。
 
 ---
 

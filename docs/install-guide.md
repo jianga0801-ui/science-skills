@@ -120,7 +120,7 @@ python tools/science_doctor.py --no-network
 
 | 环境变量 | 说明 | 可选值 | 默认值 |
 |---------|------|--------|--------|
-| `SCIENCE_NETWORK_PROFILE` | 网络策略 Profile | `default` / `china`（`enterprise` 仅在商业企业版中提供） | `china` |
+| `SCIENCE_NETWORK_PROFILE` | 网络策略 Profile | `china`（默认）/ `base`（`enterprise` 仅在商业企业版中提供） | `china` |
 | `SCIENCE_PROXY` | 可选专属代理地址 | HTTP(S) 代理 URL（如 `http://127.0.0.1:7890`） | 空（自动检测系统代理或直连） |
 | `SCIENCE_NETWORK_PROFILE_DIR` | 自定义 Profile 目录 | 本地目录绝对路径 | 项目内置目录 |
 
@@ -131,7 +131,7 @@ python tools/science_doctor.py --no-network
 **Windows PowerShell**:
 ```powershell
 # 如需回到官方源优先策略，可显式指定 default
-$env:SCIENCE_NETWORK_PROFILE="default"
+$env:SCIENCE_NETWORK_PROFILE="base"
 
 # 如需指定 Science Skills 专用代理，可选配置
 $env:SCIENCE_PROXY="http://127.0.0.1:7890"
@@ -139,13 +139,13 @@ $env:SCIENCE_PROXY="http://127.0.0.1:7890"
 
 **Windows CMD（命令提示符）**:
 ```cmd
-set SCIENCE_NETWORK_PROFILE=default
+set SCIENCE_NETWORK_PROFILE=base
 set SCIENCE_PROXY=http://127.0.0.1:7890
 ```
 
 **macOS / Linux（bash / zsh）**:
 ```bash
-export SCIENCE_NETWORK_PROFILE="default"
+export SCIENCE_NETWORK_PROFILE="base"
 export SCIENCE_PROXY="http://127.0.0.1:7890"
 ```
 
@@ -161,14 +161,14 @@ export SCIENCE_PROXY="http://127.0.0.1:7890"
 
 **macOS / Linux（bash）**:
 ```bash
-echo 'export SCIENCE_NETWORK_PROFILE="default"' >> ~/.bashrc
+echo 'export SCIENCE_NETWORK_PROFILE="base"' >> ~/.bashrc
 echo 'export SCIENCE_PROXY="http://127.0.0.1:7890"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
 **macOS / Linux（zsh，macOS 默认 Shell）**:
 ```bash
-echo 'export SCIENCE_NETWORK_PROFILE="default"' >> ~/.zshrc
+echo 'export SCIENCE_NETWORK_PROFILE="base"' >> ~/.zshrc
 echo 'export SCIENCE_PROXY="http://127.0.0.1:7890"' >> ~/.zshrc
 source ~/.zshrc
 ```
@@ -189,7 +189,7 @@ source ~/.zshrc
 - **请求重试**: 自动启用指数级高容错重试机制。
 - **PyPI 镜像**: `uv` 包安装自动使用清华/阿里云 PyPI 镜像加速。
 
-技术用户如需回到官方源优先策略，可临时设置 `SCIENCE_NETWORK_PROFILE=default`。
+技术用户如需回到官方源优先策略，可临时设置 `SCIENCE_NETWORK_PROFILE=base`。
 
 ### 4.2 可选代理加速
 
@@ -480,9 +480,9 @@ pip install uv -i https://pypi.tuna.tsinghua.edu.cn/simple
    $env:SCIENCE_PROXY="http://127.0.0.1:7890"
    ```
 
-3. **需要官方源优先策略的技术用户**: 可切换回 `default`：
+3. **需要官方源优先策略的技术用户**: 可切换到 `base`：
    ```powershell
-   $env:SCIENCE_NETWORK_PROFILE="default"
+   $env:SCIENCE_NETWORK_PROFILE="base"
    ```
 
 配置完成后重新运行 `python tools/science_doctor.py`。
@@ -515,7 +515,7 @@ pip install uv -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ```powershell
 $env:SCIENCE_NETWORK_PROFILE_DIR="D:\my-network-profiles"
-$env:SCIENCE_NETWORK_PROFILE="default"   # 或 china
+$env:SCIENCE_NETWORK_PROFILE="base"   # 或保持 china
 ```
 
 ### Q6: 如何确认当前生效的网络 Profile

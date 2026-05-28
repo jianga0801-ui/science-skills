@@ -39,7 +39,7 @@ This Free edition is the open-source baseline. Commercial **Pro** and **Enterpri
 | Component | Items |
 |---|---|
 | Skills | `pubmed_database`, `pdb_database`, `science_skills_common` (shared HTTP client) |
-| Network profiles | `china` (**built-in default**, China-optimized mirrors for selected downloads), `default` (official sources first; opt-in via env var) |
+| Network profiles | `china` (**built-in default**, China-optimized mirrors for selected downloads), `base` (official sources only; opt-in via env var) |
 | Adapters | Codex, Claude Code, Cursor |
 | Tools | `science_doctor.py` (local diagnostic), `release_check.py` (repo sanity check) |
 | Chinese query normalizers | PubMed, PDB |
@@ -94,18 +94,18 @@ Science Skills separates API access from file-download mirrors. Profiles select 
 | Profile | What it does |
 |---|---|
 | `china` (**built-in default**) | China-optimized: official sources for API queries, configured mirrors for selected large downloads (e.g. PDB coordinate files via PDBJ). Also tightens proxy diagnostics. Users on the Chinese mainland don't need to configure anything. |
-| `default` | Official sources first. Suitable for global environments. Opt in by setting `SCIENCE_NETWORK_PROFILE=default`. |
+| `base` | Official sources only — no mirror overrides. Suitable for global environments. Opt in by setting `SCIENCE_NETWORK_PROFILE=base`. |
 
 To override, set an environment variable. PowerShell:
 
 ```powershell
-$env:SCIENCE_NETWORK_PROFILE = "default"
+$env:SCIENCE_NETWORK_PROFILE = "base"
 ```
 
 macOS / Linux / Git Bash:
 
 ```bash
-export SCIENCE_NETWORK_PROFILE="default"
+export SCIENCE_NETWORK_PROFILE="base"
 ```
 
 A third profile, `enterprise` (private mirrors, internal endpoints), exists only in the commercial Enterprise edition.
@@ -160,7 +160,7 @@ It does not read the contents of `.env` and does not print secrets.
 | Audience | Students, individual researchers, evaluation | Independent researchers, small labs | Universities, R&D departments, institutions |
 | Skills coverage | PubMed, PDB + shared common | + UniProt, AlphaFold, ChEMBL, PubChem, OpenAlex, EuropePMC, ClinVar, dbSNP, Ensembl, ClinicalTrials | All Pro skills + the broadest commercial set |
 | Chinese query normalizers | PubMed, PDB | Full coverage across commercial skills | Same as Pro + custom term mappings |
-| Network profiles | `default`, `china` | `default`, `china` | `default`, `china`, `enterprise` (private mirrors / internal endpoints) |
+| Network profiles | `china` (default), `base` | `china` (default), `base` | `china` (default), `base`, `enterprise` (private mirrors / internal endpoints) |
 | Agent adapters | Codex, Claude Code, Cursor | Codex, Claude Code, Cursor | + Dify, LangGraph |
 | Science Doctor | Yes | Yes | Yes (with enterprise extensions) |
 | Support | Community best-effort (issues / discussions) | Email, ~72 h response | Dedicated channel, ~24 h response |

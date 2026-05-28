@@ -341,7 +341,7 @@ UniProt 目前没有内置镜像支持。解决方法：
 
 3. 如果使用的是公司内网代理且代理做了 HTTPS 拦截：
    - 联系 IT 部门获取代理的 CA 证书并安装到系统信任根证书存储中。
-   - 开源免费版仅含 `default` / `china` 两个 profile；如果需要私有镜像 / 内网终点的 `enterprise` profile，请查看 [editions-comparison.md](editions-comparison.md) 中的企业版说明。也可以通过 `SCIENCE_NETWORK_PROFILE_DIR` 指向本地自定义 profile 目录。
+   - 开源免费版仅含 `china`（默认）与 `base` 两个 profile；如果需要私有镜像 / 内网终点的 `enterprise` profile，请查看 [editions-comparison.md](editions-comparison.md) 中的企业版说明。也可以通过 `SCIENCE_NETWORK_PROFILE_DIR` 指向本地自定义 profile 目录。
 
 ---
 
@@ -354,7 +354,7 @@ python tools/science_doctor.py
 ```
 
 JSON 输出中：
-- `checks.network_profile.profile` — 当前激活的 profile 名称（默认 `china`；可选 `default`）。`enterprise` 仅在商业企业版中提供。
+- `checks.network_profile.profile` — 当前激活的 profile 名称（默认 `china`；可选 `base`）。`enterprise` 仅在商业企业版中提供。
 - `checks.network_profile.sources` — 当前 profile 中已配置的数据源列表（如 `["alphafold", "chembl", "openalex", "pdb", "pubmed", "..."]`）。
 
 若 `status` 为 `"fail"`，检查：
@@ -955,7 +955,7 @@ Science Skills 的 `HttpClient` 会解析该头部并自动施加背压延迟（
 
 | 变量名 | 用途 | 可选值 |
 |--------|------|--------|
-| `SCIENCE_NETWORK_PROFILE` | 激活的网络策略 profile | `default`（官方源）、`china`（国内优化）。`enterprise`（企业内网）仅在商业企业版中提供。默认值为 `china` |
+| `SCIENCE_NETWORK_PROFILE` | 激活的网络策略 profile | `china`（国内优化，默认）、`base`（仅官方源）。`enterprise`（企业内网）仅在商业企业版中提供。默认值为 `china` |
 | `SCIENCE_PROXY` | 专属 HTTP(S) 代理地址 | `http://127.0.0.1:7890` |
 | `SCIENCE_NETWORK_PROFILE_DIR` | 自定义 profile 文件目录 | 绝对路径，如 `/opt/profiles` |
 | `SCIENCE_SKILLS_USER_AGENT` | 自定义 HTTP User-Agent 头 | 任意字符串 |

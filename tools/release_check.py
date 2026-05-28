@@ -168,7 +168,7 @@ def _check_manifest(root: pathlib.Path, report: dict[str, Any]) -> None:
   available_profiles = {
       p.stem
       for p in profile_dir.glob("*.json")
-      if p.stem != "base" and not p.stem.endswith(".overlay")
+      if not p.stem.endswith(".overlay")
   }
   available_adapters = {
       p.parent.name for p in (root / "adapters").glob("*/adapter.json")

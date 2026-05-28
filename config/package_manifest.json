@@ -16,7 +16,7 @@
         "science_skills_common"
       ],
       "network_profiles": [
-        "default",
+        "base",
         "china"
       ],
       "adapters": [
